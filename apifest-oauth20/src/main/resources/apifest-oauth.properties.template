@@ -1,0 +1,13 @@
+oauth20.host=
+oauth20.port=
+oauth20.database=mongodb
+db_uri=mongodb://127.0.0.1:27017
+redis.sentinels=
+redis.master=
+apifest-oauth20.nodes=
+custom.classes.jar=
+user.authenticate.class=
+custom.grant_type=
+custom.grant_type.class=
+hazelcast.password=
+cassandra.contanctPoints=
