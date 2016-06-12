@@ -29,6 +29,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.JsonParseException;
@@ -177,7 +178,7 @@ public class AuthorizationServer {
                     db.updateAuthCodeValidStatus(authCode.getCode(), false);
                     accessToken = new AccessToken(TOKEN_TYPE_BEARER, getExpiresIn(TokenRequest.PASSWORD,authCode.getScope()),
                             authCode.getScope(), getExpiresIn(TokenRequest.REFRESH_TOKEN, authCode.getScope()));
-                    accessToken.setUserId(userId);
+                    accessToken.setUserId(authCode.getUserId());
                     accessToken.setClientId(authCode.getClientId());
                     accessToken.setCodeId(authCode.getId());
                     db.storeAccessToken(accessToken);
@@ -482,7 +483,7 @@ public class AuthorizationServer {
         return true;
     }
     public String authicate(String username,String password)  {
-        String url="http://localhost:9858/accounts/authenticate?username="+username+"&password="+password;
+        String url="http://authen:9858/accounts/authenticate?username="+username+"&password="+password;
         ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
 
             @Override
@@ -498,15 +499,23 @@ public class AuthorizationServer {
             }
 
         };
-        HttpClient client = HttpClientBuilder.create().build();
+        HttpClient client = new DefaultHttpClient();
         HttpGet httpGet=new HttpGet(url);
-        String response = "-1";
+        String userId=null;
         try {
-            response = client.execute(httpGet,responseHandler);
-        } catch (IOException e) {
+            HttpResponse response  = client.execute(httpGet);
+            if (response.getStatusLine().getStatusCode() < 300 && response.getStatusLine().getStatusCode() >= 200) {
+                HttpEntity entity = response.getEntity();
+                 userId = EntityUtils.toString(entity, "UTF-8");
+
+            }
+            else{
+                userId="-1";
+            }
+            } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return response;
+        return userId;
     }
 }

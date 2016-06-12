@@ -53,6 +53,7 @@ import com.google.gson.JsonObject;
  * Handler for requests received on the server.
  *
  * @author Rossitsa Borissova
+ * you so dumb
  */
 public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
 
@@ -182,6 +183,10 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
                 String json = gson.toJson(token);
                 log.debug(json);
                 response = Response.createOkResponse(json);
+                response.setHeader("Access-Control-Allow-Origin", "*");
+                response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+                response.setHeader("Access-Control-Max-Age", "3600");
+                response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             } else {
                 response = Response.createUnauthorizedResponse();
             }
@@ -191,6 +196,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
 
     protected HttpResponse handleToken(HttpRequest request) {
         HttpResponse response = null;
+        request.setHeader("Access-Control-Allow-Origin", "*");
         String contentType = request.headers().get(HttpHeaders.Names.CONTENT_TYPE);
         if (contentType != null && contentType.contains(HttpHeaders.Values.APPLICATION_X_WWW_FORM_URLENCODED)) {
             try {
@@ -200,6 +206,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
                     String jsonString = mapper.writeValueAsString(accessToken);
                     log.debug("access token:" + jsonString);
                     response = Response.createOkResponse(jsonString);
+
                     accessTokensLog.debug("token {}", jsonString);
                 }
             } catch (OAuthException ex) {
@@ -221,6 +228,10 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
         } else {
             response = Response.createResponse(HttpResponseStatus.BAD_REQUEST, Response.UNSUPPORTED_MEDIA_TYPE);
         }
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         return response;
     }
 
@@ -258,6 +269,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
                 invokeExceptionHandler(e, request);
             } catch (IllegalAccessException e) {
                 log.error("cannot invoke handler", e);
+
                 invokeExceptionHandler(e, request);
             }
         }
@@ -274,11 +286,16 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
             JsonObject obj = new JsonObject();
             obj.addProperty("redirect_uri", redirectURI);
             response = Response.createOkResponse(obj.toString());
+
             accessTokensLog.info("authCode {}", obj.toString());
         } catch (OAuthException ex) {
             response = Response.createOAuthExceptionResponse(ex);
             invokeExceptionHandler(ex, req);
         }
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         return response;
     }
 
@@ -290,6 +307,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
             String jsonString = mapper.writeValueAsString(creds);
             log.debug("credentials:" + jsonString);
             response = Response.createOkResponse(jsonString);
+
         } catch (OAuthException ex) {
             response = Response.createOAuthExceptionResponse(ex);
             invokeExceptionHandler(ex, req);
@@ -306,6 +324,11 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
         if (response == null) {
             response = Response.createBadRequestResponse(Response.CANNOT_REGISTER_APP);
         }
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
         return response;
     }
 
@@ -320,6 +343,10 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
         }
         String json = "{\"revoked\":\"" + revoked + "\"}";
         HttpResponse response = Response.createOkResponse(json);
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         return response;
     }
 
@@ -333,6 +360,10 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
             invokeExceptionHandler(e, req);
             response = Response.createResponse(e.getHttpStatus(), e.getMessage());
         }
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         return response;
     }
 
@@ -345,6 +376,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
             try {
                 String responseMsg = scopeService.updateScope(req, scopeName);
                 response = Response.createOkResponse(responseMsg);
+
             } catch (OAuthException e) {
                 invokeExceptionHandler(e, req);
                 response = Response.createResponse(e.getHttpStatus(), e.getMessage());
@@ -352,6 +384,10 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
         } else {
             response = Response.createNotFoundResponse();
         }
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         return response;
     }
 
@@ -364,7 +400,12 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
         } catch (OAuthException e) {
             invokeExceptionHandler(e, req);
             response = Response.createResponse(e.getHttpStatus(), e.getMessage());
+
         }
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         return response;
     }
 
@@ -380,10 +421,15 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
             } catch (OAuthException e) {
                 invokeExceptionHandler(e, req);
                 response = Response.createResponse(e.getHttpStatus(), e.getMessage());
+
             }
         } else {
             response = Response.createNotFoundResponse();
         }
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         return response;
     }
 
@@ -396,6 +442,7 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
             try {
                 String responseMsg = scopeService.deleteScope(scopeName);
                 response = Response.createOkResponse(responseMsg);
+
             } catch (OAuthException e) {
                 invokeExceptionHandler(e, req);
                 response = Response.createResponse(e.getHttpStatus(), e.getMessage());
@@ -403,6 +450,10 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
         } else {
             response = Response.createNotFoundResponse();
         }
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         return response;
     }
 
@@ -418,6 +469,10 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
             try {
                 if (auth.updateClientApp(req, clientId)) {
                     response = Response.createOkResponse(Response.CLIENT_APP_UPDATED);
+                    response.setHeader("Access-Control-Allow-Origin", "*");
+                    response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+                    response.setHeader("Access-Control-Max-Age", "3600");
+                    response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
                 }
             } catch (OAuthException ex) {
                 response = Response.createOAuthExceptionResponse(ex);
@@ -425,6 +480,10 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
             }
         } else {
             response = Response.createNotFoundResponse();
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+            response.setHeader("Access-Control-Max-Age", "3600");
+            response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         }
         return response;
     }
@@ -449,7 +508,10 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
             invokeExceptionHandler(e, req);
             response = Response.createResponse(HttpResponseStatus.BAD_REQUEST, Response.CANNOT_LIST_CLIENT_APPS);
         }
-
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         return response;
     }
 
@@ -498,8 +560,13 @@ public class HttpRequestHandler extends SimpleChannelUpstreamHandler {
                 Gson gson = new Gson();
                 String jsonString = gson.toJson(accessTokens);
                 response = Response.createOkResponse(jsonString);
+
             }
         }
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         return response;
     }
 }
